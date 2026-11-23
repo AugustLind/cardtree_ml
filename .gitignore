@@ -1,0 +1,12 @@
+# Local AI assistant configuration and instructions
+/.agents/
+/.codex/
+/AGENTS.md
+/docs/agents/
+
+# Local AWS credentials/configuration
+/.aws/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
