@@ -2,13 +2,38 @@
 
 The curiosity began with a **kortstokk** (a deck of cards) in the mountains of
 Nepal. While using it to teach a friend about binary search trees, we wondered:
-could a machine learn to place cards correctly in a BST from feedback?
+could a machine learn to place cards correctly from feedback?
 
-This project explores that question with a small reinforcement-learning agent.
-It practices rank-based card insertion, sees a reward or penalty after each
-placement, and displays its tree as playing cards. See
-[`docs/cardtree-learning.md`](docs/cardtree-learning.md) for the model, cost
-math, and initial benchmark findings.
+This project explores that question with a small reinforcement-learning agent
+and a visual Python desktop app.
+
+## The card tree
+
+The agent builds a binary search tree using card ranks. Ace is low, and suits
+are only visual decoration. A green outline marks a card the agent placed
+correctly.
+
+![Card tree app view](docs/images/cardtree-view.png)
+
+Each round starts with 4–10 cards in a fresh tree. The agent tries each
+remaining card once. Correct cards stay in the tree; incorrect cards get a
+penalty and are discarded.
+
+Training is complete after **three perfect rounds in a row**. Any mistake
+resets the streak. The agent’s learned policy and progress are saved locally
+in `~/.cardtree_ml/policy.json`.
+
+## Compare punishment rules
+
+The **Benchmark punishments** button compares nine cost functions. It trains
+five fresh agents per function and reports how often they achieve a three-round
+streak, plus the mean and median placement iterations.
+
+![Punishment benchmark results](docs/images/punishment-benchmark.png)
+
+The benchmark shows an initial experiment, not a general result. See
+[`docs/cardtree-learning.md`](docs/cardtree-learning.md) for the learning update,
+cost formulas, and findings.
 
 ## Run the app
 
@@ -18,32 +43,6 @@ Use Python 3.10 or later with Tkinter available:
 python3 -m cardtree_ml
 ```
 
-The robot practices BST insertion with one card for each rank (Ace is low).
-Each round starts with 4–10 randomly selected cards already placed in a fresh
-tree; the robot attempts each remaining card once. The playing-card spades are
-visual decoration; rank alone determines ordering. Incorrect cards are shown
-with a penalty and discarded. The app counts each placement iteration and
-requires three perfect rounds in a row to mark training complete. The learned
-Q-values and counters are saved in `~/.cardtree_ml/policy.json` and reused in
-later rounds and runs.
-
-The visible robot pauses for about two seconds between placements. After a
-round, **Train until 3 perfect rounds** runs shuffled rounds without animation
-until every remaining placement is correct in three rounds in a row, then
-automatically starts a fresh visible round. It stops after 5,000 rounds if it
-has not reached the streak, and leaves the learned policy saved.
-
-After a visible round, **Benchmark punishments** compares nine penalty rules.
-It trains five fresh learners per rule with matched random seeds, up to 5,000
-rounds per learner, and then shows three-round completion rate plus mean and
-median placement iterations alongside each rule's formula. This benchmark
-does not modify the saved learner.
-
-## Punishment rule
-
-The starter punishment in `cardtree_ml/punishment.py` is larger when the
-attempted path first diverges from the correct path closer to the root. Each
-placement is a tuple of `"L"` and `"R"` directions from the root, such as
-`("L", "R")`; the root slot is `()`. The function is called only for an
-incorrect placement. Its negative is the robot's reward for that attempt. You
-can change this simple rule as you experiment with better penalties.
+The visible app pauses for about two seconds between placements. **Train until
+3 perfect rounds** runs rounds without animation, then opens a fresh visual
+round when training completes.
